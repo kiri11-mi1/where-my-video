@@ -19,5 +19,3 @@ class YTApi:
     def get_channel_id(self, channel_url):
         pass
 
-
-yt = YoutubeDataApi(YT_TOKEN)
