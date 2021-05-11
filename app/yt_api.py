@@ -1,6 +1,5 @@
 from youtube_api import YoutubeDataApi
 from app.config import YT_TOKEN
-import os
 
 
 class YTApi:
