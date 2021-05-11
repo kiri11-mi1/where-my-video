@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from aiogram import Bot, types
 from aiogram.types import BotCommand
@@ -6,6 +7,9 @@ from aiogram.dispatcher import Dispatcher
 
 from app.config import TG_TOKEN
 from app.handlers import register_handlers
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 async def set_commands(bot: Bot):
@@ -23,6 +27,7 @@ async def set_commands(bot: Bot):
 async def main():
     bot = Bot(token=TG_TOKEN)
     dp = Dispatcher(bot)
+    
 
     register_handlers(dp)
     await set_commands(bot)
