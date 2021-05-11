@@ -1,15 +1,33 @@
+import asyncio
+
 from aiogram import Bot, types
+from aiogram.types import BotCommand
 from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
 
-from config import TOKEN
+from app.config import TG_TOKEN
+from app.handlers import register_handlers
 
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
 
-@dp.message_handler(commands=['start'])
-async def process_start_command(message: types.Message):
-    await message.reply("Привет!\nНапиши мне что-нибудь!")
+async def set_commands(bot: Bot):
+    commands = [
+        BotCommand(command='/start', description='Начнём общение!'),
+        BotCommand(command='/add', description='Добавлю YouTube канал.'),
+        BotCommand(command='/del', description='Удалю YouTube канал.'),
+        BotCommand(command='/check', description='Проверю, есть ли новые видео на каналах.'),
+        BotCommand(command='/help', description='Дам подсказку, если забыл команды.'),
+    ]
+
+    await bot.set_my_commands(commands)
+
+
+async def main():
+    bot = Bot(token=TG_TOKEN)
+    dp = Dispatcher(bot)
+
+    register_handlers(dp)
+    await set_commands(bot)
+    await dp.start_polling()
+
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    asyncio.run(main())
