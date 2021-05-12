@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 async def set_commands(bot: Bot):
+    '''Установка inline команд'''
     commands = [
         BotCommand(command='/start', description='Начнём общение!'),
         BotCommand(command='/add', description='Добавлю YouTube канал.'),
@@ -27,7 +28,7 @@ async def set_commands(bot: Bot):
 async def main():
     bot = Bot(token=TG_TOKEN)
     dp = Dispatcher(bot)
-    
+
 
     register_handlers(dp)
     await set_commands(bot)
