@@ -4,6 +4,8 @@ import os
 TG_TOKEN = os.environ.get('TG_TOKEN')
 YT_TOKEN = os.environ.get('YT_TOKEN')
 
+DATABASE_FILE = 'database.db'
+
 # TODO
 # добавить смайлики
 

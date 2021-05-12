@@ -8,6 +8,7 @@ aiogram = "*"
 requests = "*"
 youtube-data-api = "*"
 aiohttp = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 
