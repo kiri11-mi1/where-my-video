@@ -9,7 +9,6 @@ Base = declarative_base()
 class Chat(Base):
     __tablename__ = 'chat'
     id = Column(String(64), primary_key=True)
-    # Посмотреть размер id чатов
     channels = relationship('Channel', backref="chat")
 
 
@@ -20,25 +19,9 @@ class Chat(Base):
 class Channel(Base):
     __tablename__ = 'channel'
     id = Column(String(64), primary_key=True)
-    title = Column(String(64))
-
-    videos = relationship('Video', backref="channel")
+    last_video_id = Column(String(64))
     chat_id = Column(String(64), ForeignKey('chat.id'))
 
 
     def __repr__(self):
-        return f'<Channel: {self.id} - {self.title}>'
-
-
-class Video(Base):
-    __tablename__ = 'video'
-    id = Column(String(64), primary_key=True)
-    url = Column(String)
-    datetime = Column(DateTime)
-    title = Column(String(128))
-
-    channel_id = Column(String(64), ForeignKey('channel.id'))
-
-
-    def __repr__(self):
-        return f'<Video: {self.title} - {self.datetime}>'
+        return f'<Channel: {self.id}>'
