@@ -16,6 +16,7 @@ async def set_commands(bot: Bot):
     '''Установка inline команд'''
     commands = [
         BotCommand(command='/start', description='Начнём общение!'),
+        BotCommand(command='/list', description='Выведу список каналов, которые ты выбрал!'),
         BotCommand(command='/add', description='Добавлю YouTube канал.'),
         BotCommand(command='/del', description='Удалю YouTube канал.'),
         BotCommand(command='/check', description='Проверю, есть ли новые видео на каналах.'),
