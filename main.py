@@ -23,7 +23,7 @@ register_handlers(dp)
 async def scheduled(wait_wor):
     while True:
         await asyncio.sleep(wait_wor)
-        
+
         for chat in db.get_all_chats():
             updates = await checking_updates(chat.id)
             for update in updates:
@@ -31,5 +31,5 @@ async def scheduled(wait_wor):
 
 
 if __name__ == '__main__':
-    dp.loop.create_task(scheduled(10))
+    dp.loop.create_task(scheduled(60*60*60))
     executor.start_polling(dp, skip_updates=True)
