@@ -5,7 +5,7 @@ from aiogram import Bot, types, executor
 from aiogram.types import BotCommand
 from aiogram.dispatcher import Dispatcher
 
-from app.config import TG_TOKEN, DATABASE_FILE
+from app.config import TG_TOKEN
 from app.handlers import register_handlers, checking_updates
 from app.db_api import DBApi
 
@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=TG_TOKEN)
 dp = Dispatcher(bot, loop=asyncio.get_event_loop())
-db = DBApi(DATABASE_FILE)
+db = DBApi()
 
 register_handlers(dp)
 
