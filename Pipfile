@@ -7,8 +7,8 @@ name = "pypi"
 aiogram = "*"
 requests = "*"
 youtube-data-api = "*"
-aiohttp = "*"
 sqlalchemy = "*"
+aiohttp = "*"
 
 [dev-packages]
 
