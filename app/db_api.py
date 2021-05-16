@@ -47,6 +47,11 @@ class DBApi:
         return chat
 
 
+    def get_all_chats(self):
+        return self.session.query(Chat).all()
+
+
+
     def delete_channel(self, id:str, chat_id:str):
         channel = self.get_channel(id, chat_id)
         self.session.delete(channel)
