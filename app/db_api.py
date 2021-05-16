@@ -1,13 +1,13 @@
 from app.models import Base, Chat, Channel
-from app.config import DATABASE_FILE
+from app.config import DB_USER, DB_NAME, DB_PASSWORD, HOST, PORT
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
 class DBApi:
-    def __init__(self, db_filename):
-        engine = create_engine(f'sqlite:///{db_filename}')
+    def __init__(self):
+        engine = create_engine(f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{HOST}:{PORT}/{DB_NAME}')
         Base.metadata.create_all(engine)
         session_factory = sessionmaker(bind=engine)
         Session = scoped_session(session_factory)
@@ -38,10 +38,10 @@ class DBApi:
 
 
     def get_or_create_chat(self, chat_id: str):
-        chat = self.session.query(Chat).get(chat_id)
+        chat = self.session.query(Chat).get(str(chat_id))
         if chat:
             return chat
-        chat = Chat(id=chat_id)
+        chat = Chat(id=str(chat_id))
         self.session.add(chat)
         self.session.commit()
         return chat
@@ -49,7 +49,6 @@ class DBApi:
 
     def get_all_chats(self):
         return self.session.query(Chat).all()
-
 
 
     def delete_channel(self, id:str, chat_id:str):
