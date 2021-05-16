@@ -14,15 +14,21 @@ class DBApi:
         self.session = Session()
     
 
+    def get_all_channels(self, chat_id):
+        return self.session.query(Channel)\
+                              .filter_by(chat_id=chat_id)\
+                              .all()
+
+
     def get_channel(self, id:str, chat_id: str):
         return self.session.query(Channel)\
-                              .filter_by(chat_id=chat_id, id=id)\
+                              .filter_by(chat_id=chat_id, channel_id=id)\
                               .first()
 
 
     def create_channel(self, id:str, chat_id: str, last_video_id: str):
         channel = Channel(
-            id=id,
+            channel_id=id,
             chat_id=chat_id,
             last_video_id=last_video_id
         )
@@ -41,28 +47,23 @@ class DBApi:
         return chat
 
 
-    def create_new_chat(id: str):
-        chat = Chat(id=id)
-        session.add(chat)
-        session.commit()
-
-
-    def create_new_channel(id: str, chat: object):
-        channel = Channel(id=id, chat_id=chat.id)
-        session.add(channel)
-        session.commit()
-
+    def delete_channel(self, id:str, chat_id:str):
+        channel = self.get_channel(id, chat_id)
+        self.session.delete(channel)
+        self.session.commit()
+        return channel
 
 
 if __name__ == '__main__':
-    db = DBApi(DATABASE_FILE)
-    db.get_or_create_chat('545454')
-    db.get_or_create_chat('787878')
-    # channel = Channel(id = '15748', chat_id='545454', last_video_id='717171')
-    # db.session.add(channel)
-    # db.session.commit()
-    # channel = Channel(id = '44745', chat_id='545454', last_video_id='121212')
-    # db.session.add(channel)
-    # db.session.commit()
-    result = db.session.query(Channel).filter_by(chat_id='545454', id='15748').first()
-    print(result)
+    # db = DBApi(DATABASE_FILE)
+    # db.get_or_create_chat('545454')
+    # db.get_or_create_chat('787878')
+    # # channel = Channel(id = '15748', chat_id='545454', last_video_id='717171')
+    # # db.session.add(channel)
+    # # db.session.commit()
+    # # channel = Channel(id = '44745', chat_id='545454', last_video_id='121212')
+    # # db.session.add(channel)
+    # # db.session.commit()
+    # result = db.session.query(Channel).filter_by(chat_id='545454', id='15748').first()
+    # print(result)
+    pass
