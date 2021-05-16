@@ -1,42 +1,35 @@
 import asyncio
 import logging
-import time
 
-from aiogram import Bot, types
+from aiogram import Bot, types, executor
 from aiogram.types import BotCommand
 from aiogram.dispatcher import Dispatcher
 
-from app.config import TG_TOKEN
-from app.handlers import register_handlers
+from app.config import TG_TOKEN, DATABASE_FILE
+from app.handlers import register_handlers, checking_updates
+from app.db_api import DBApi
 
 
 logging.basicConfig(level=logging.INFO)
 
 
-async def set_commands(bot: Bot):
-    '''Установка inline команд'''
-    commands = [
-        BotCommand(command='/start', description='Начнём общение!'),
-        BotCommand(command='/list', description='Выведу список каналов, которые ты выбрал!'),
-        BotCommand(command='/add', description='Добавлю YouTube канал.'),
-        BotCommand(command='/del', description='Удалю YouTube канал.'),
-        BotCommand(command='/check', description='Проверю, есть ли новые видео на каналах.'),
-        BotCommand(command='/help', description='Дам подсказку, если забыл команды.'),
-    ]
+bot = Bot(token=TG_TOKEN)
+dp = Dispatcher(bot, loop=asyncio.get_event_loop())
+db = DBApi(DATABASE_FILE)
 
-    await bot.set_my_commands(commands)
+register_handlers(dp)
 
 
-async def main():
-    bot = Bot(token=TG_TOKEN)
-    dp = Dispatcher(bot)
-
-
-    register_handlers(dp)
-    await set_commands(bot)
-    await dp.skip_updates()
-    await dp.start_polling()
+async def scheduled(wait_wor):
+    while True:
+        await asyncio.sleep(wait_wor)
+        
+        for chat in db.get_all_chats():
+            updates = await checking_updates(chat.id)
+            for update in updates:
+                await bot.send_message(chat.id, update, parse_mode='HTML')
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    dp.loop.create_task(scheduled(10))
+    executor.start_polling(dp, skip_updates=True)
