@@ -18,7 +18,8 @@ class Chat(Base):
 
 class Channel(Base):
     __tablename__ = 'channel'
-    id = Column(String(64), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    channel_id = Column(String(64))
     last_video_id = Column(String(64))
     chat_id = Column(String(64), ForeignKey('chat.id'))
 
