@@ -33,8 +33,12 @@ async def main():
 
     register_handlers(dp)
     await set_commands(bot)
+    await dp.skip_updates()
     await dp.start_polling()
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except asyncio.TimeoutError:
+        pass
