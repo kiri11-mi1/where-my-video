@@ -71,14 +71,15 @@ async def help_command(message: types.Message):
     await message.answer(HELP_MESSAGE)
 
 
-async def check_command(message: types.Message):
-    chat = db.get_or_create_chat(message.chat.id)
+async def checking_updates(chat_id):
+    chat = db.get_or_create_chat(chat_id)
+    updates = ['Рассылка']
     if not (channels := db.get_all_channels(chat.id)):
-        await message.answer(f'Нету каналов. Быстрей добавляй!')
+        updates.append(f'Нету каналов. Быстрей добавляй!')
 
     for channel in channels:
         current_last_video = yt.get_last_video_id(channel.channel_id)
-        if channel.channel_id != current_last_video:
+        if channel.last_video_id != current_last_video:
             channel.last_video_id = current_last_video
 
             channel_url = f'https://www.youtube.com/channel/{channel.channel_id}'
@@ -87,9 +88,15 @@ async def check_command(message: types.Message):
             video_url = f'https://www.youtube.com/watch?v={channel.last_video_id}'
             video_title = yt.video_title(channel.last_video_id)
 
-            answer = f'❗️ На канале <a href=\'{channel_url}\'>{channel_name}</a> вышло новое видео: <a href=\'{video_url}\'>{video_title}</a>'
-            await message.answer(answer, ParseMode.HTML)
+            updates.append(f'❗️ На канале <a href=\'{channel_url}\'>{channel_name}</a> вышло новое видео: <a href=\'{video_url}\'>{video_title}</a>')
 
+    return updates
+
+
+async def check_command(message: types.Message):
+    updates = await checking_updates(message.chat.id)
+    for update in updates:
+        await message.answer(update, ParseMode.HTML)
 
 
 def register_handlers(dp: Dispatcher):
@@ -99,4 +106,3 @@ def register_handlers(dp: Dispatcher):
     dp.register_message_handler(list_command, commands=['list'])
     dp.register_message_handler(check_command, commands=['check'])
     dp.register_message_handler(del_command, commands=['del'])
-
