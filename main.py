@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 
 from aiogram import Bot, types
 from aiogram.types import BotCommand
@@ -38,7 +39,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    try:
-        asyncio.run(main())
-    except asyncio.TimeoutError:
-        pass
+    asyncio.run(main())
