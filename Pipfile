@@ -9,6 +9,7 @@ requests = "*"
 youtube-data-api = "*"
 sqlalchemy = "*"
 aiohttp = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
