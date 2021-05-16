@@ -5,7 +5,7 @@ import re
 class YTApi(YoutubeDataApi):
 
     def video_title(self, video_id: str) -> str:
-        return self.yt.get_video_metadata(video_id)['video_title']
+        return self.get_video_metadata(video_id)['video_title']
 
 
     def get_channel_name(self, channel_id):
