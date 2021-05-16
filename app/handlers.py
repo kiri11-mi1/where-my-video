@@ -73,7 +73,7 @@ async def help_command(message: types.Message):
 
 async def checking_updates(chat_id):
     chat = db.get_or_create_chat(chat_id)
-    updates = ['Рассылка']
+    updates = []
     if not (channels := db.get_all_channels(chat.id)):
         updates.append(f'Нету каналов. Быстрей добавляй!')
 
