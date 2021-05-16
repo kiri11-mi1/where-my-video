@@ -1,6 +1,7 @@
 from youtube_api import YoutubeDataApi
 from app.config import YT_TOKEN
 import re
+import requests
 
 class YTApi(YoutubeDataApi):
 
@@ -13,9 +14,12 @@ class YTApi(YoutubeDataApi):
 
 
     def get_last_video_id(self, channel_id):
-        main_playlist_id = self.get_channel_metadata(channel_id=channel_id)['playlist_id_uploads']
-        all_videos = self.get_videos_from_playlist_id(playlist_id=main_playlist_id)
-        return all_videos[0]['video_id']
+        try:
+            main_playlist_id = self.get_channel_metadata(channel_id=channel_id)['playlist_id_uploads']
+            all_videos = self.get_videos_from_playlist_id(playlist_id=main_playlist_id)
+            return all_videos[0]['video_id']
+        except requests.exceptions.HTTPError:
+            return None
 
 
     def get_channel_id_by_url(self, channel_url:str) -> str:
