@@ -3,7 +3,9 @@ from app.config import YT_TOKEN
 import re
 import requests
 
+
 class YTApi(YoutubeDataApi):
+
 
     def video_title(self, video_id: str) -> str:
         return self.get_video_metadata(video_id)['video_title']
