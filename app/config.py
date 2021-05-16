@@ -4,10 +4,13 @@ import os
 TG_TOKEN = os.environ.get('TG_TOKEN')
 YT_TOKEN = os.environ.get('YT_TOKEN')
 
-DATABASE_FILE = 'database.db'
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_NAME = os.environ.get('DB_NAME')
 
-# TODO
-# добавить смайлики
+PORT = os.environ.get('PORT')
+HOST = os.environ.get('HOST')
+
 
 START_MESSAGE = (
     "Привет!\n"
