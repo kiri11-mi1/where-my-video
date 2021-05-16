@@ -59,12 +59,15 @@ async def del_command(message: types.Message):
 async def list_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)
     if not (channels := db.get_all_channels(chat.id)):
-        await message.answer(f'Нету каналов. Быстрей добавляй!')
+        return await message.answer(f'Нету каналов. Быстрей добавляй!')
 
+    answer = ''
     for channel in channels:
         url = f'https://www.youtube.com/channel/{channel.channel_id}'
         channel_name = yt.get_channel_name(channel.channel_id)
-        await message.answer(f'🔷 <a href=\'{url}\'>{channel_name}</a>', ParseMode.HTML)
+        answer += f'🔷 <a href=\'{url}\'>{channel_name}</a>' + '\n'
+
+    return await message.answer(answer, ParseMode.HTML)
 
 
 async def help_command(message: types.Message):
