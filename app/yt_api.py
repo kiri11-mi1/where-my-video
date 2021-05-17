@@ -31,30 +31,6 @@ class YTApi(YoutubeDataApi):
 
 
 if __name__ == '__main__':
-    # response = requests.get(
-    #     url = f'https://www.googleapis.com/youtube/v3/channels?part=snippetforUsername=ExtremeCode&key={YT_TOKEN}',
-    #     # params = {
-    #     #     'part': 'snippetforUsername=ExtremeCode',
-    #     #     'key': YT_TOKEN
-    #     # }
-    # ).json()
-    # print(response)
-    # ExtremeCode - Channel Id - UCBNlINWfd08qgDkUTaUY4_w
     yt = YTApi(YT_TOKEN)
     result = yt.get_video_metadata('G6rrIxY9q0')
-    # result = yt.search('https://www.youtube.com/channel/UCBNlINWfd08qgDkUTaUY4_w')
-
-    # url = [
-    #     'https://www.youtube.com/channel/UCBNlINWfd08qgDkUTaUY4_w',
-    #     'https://www.youtube.com/c/ExtremeCode',
-    #     'https://www.youtube.com/channel/UCAJYuvFKA_MlFq6ekkn7WFA'
-    # ]
-    
-    
-    # # result = yt.get_last_video_id('UCBNlINWfd08qgDkUTaUY4_w')
-    # result = yt.get_channel_metadata(channel_id='ExtremeCode')
-    # result = yt.get_channel_id('https://www.youtube.com/channel/UCqqISS-PyCnhjbpXqhclvaQ')
-    # result = yt.get_last_video_id('UCBNlINWfd08qgDkUTaUY4_w')
     print(result)
-    # UCD5_waDcGBhof9xuA1qovTQ
-    # UCPJXxmrw1NRmOwdZtLM694g
