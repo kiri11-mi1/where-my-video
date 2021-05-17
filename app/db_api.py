@@ -1,5 +1,5 @@
 from app.models import Base, Chat, Channel
-from app.config import DB_USER, DB_NAME, DB_PASSWORD, HOST, PORT
+from app.config import DB_USER, DB_NAME, DB_PASSWORD, HOST
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -37,6 +37,13 @@ class DBApi:
         return channel
 
 
+    def delete_channel(self, id:str, chat_id:str):
+        channel = self.get_channel(id, chat_id)
+        self.session.delete(channel)
+        self.session.commit()
+        return channel
+
+
     def get_or_create_chat(self, chat_id: str):
         chat = self.session.query(Chat).get(str(chat_id))
         if chat:
@@ -47,27 +54,18 @@ class DBApi:
         return chat
 
 
+    def delete_chat(self, chat_id: str):
+        chat = self.session.query(Chat).get(str(chat_id))
+        self.session.delete(chat)
+        self.session.commit()
+        return chat
+
+
     def get_all_chats(self):
         return self.session.query(Chat).all()
 
 
-    def delete_channel(self, id:str, chat_id:str):
-        channel = self.get_channel(id, chat_id)
-        self.session.delete(channel)
-        self.session.commit()
-        return channel
-
-
 if __name__ == '__main__':
-    # db = DBApi(DATABASE_FILE)
-    # db.get_or_create_chat('545454')
-    # db.get_or_create_chat('787878')
-    # # channel = Channel(id = '15748', chat_id='545454', last_video_id='717171')
-    # # db.session.add(channel)
-    # # db.session.commit()
-    # # channel = Channel(id = '44745', chat_id='545454', last_video_id='121212')
-    # # db.session.add(channel)
-    # # db.session.commit()
-    # result = db.session.query(Channel).filter_by(chat_id='545454', id='15748').first()
-    # print(result)
-    pass
+    db = DBApi()
+    for chat in db.get_all_chats():
+        print(chat)
