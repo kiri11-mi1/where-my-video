@@ -22,6 +22,7 @@ async def start_command(message: types.Message):
 async def add_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)
     channel_links = re.split('\s+', message.get_args())
+    answers = ''
     for link in channel_links:
         if chan_id := yt.get_channel_id_by_url(link):
             channel_name = yt.get_channel_name(chan_id)
@@ -33,27 +34,29 @@ async def add_command(message: types.Message):
                     chat_id=chat.id,
                     last_video_id=last_video_id
                 )
-                answer = f'✅ Канал <a href=\'{link}\'>{channel_name}</a> успешно добавлен.'
-                await message.answer(answer, ParseMode.HTML)
+                answers += f'✅ Канал <a href=\'{link}\'>{channel_name}</a> успешно добавлен.\n'
             else:
-                answer = f'⚠️ Канал <a href=\'{link}\'>{channel_name}</a> уже был добавлен.'
-                await message.answer(answer, ParseMode.HTML)
+                answers += f'⚠️ Канал <a href=\'{link}\'>{channel_name}</a> уже был добавлен.\n'
         else:
-            await message.answer(f'❌ Канал {link} не найден и не был добавлен...')
+            answers += f'❌ Канал {link} не найден и не был добавлен...\n'
+
+    await message.answer(answers, ParseMode.HTML)
 
 
 async def del_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)
     channel_links = re.split('\s+', message.get_args())
+    answers = ''
     for link in channel_links:
         chan_id = yt.get_channel_id_by_url(link)
         if db.get_channel(id=chan_id, chat_id=chat.id):
             db.delete_channel(id=chan_id, chat_id=chat.id)
             channel_name = yt.get_channel_name(chan_id)
-            answer = f'🗑 Удалил канал: <a href=\'{link}\'>{channel_name}</a>'
-            await message.answer(answer, ParseMode.HTML)
+            answers += f'🗑 Удалил канал: <a href=\'{link}\'>{channel_name}</a>\n'
         else:
-            await message.answer(f'Не нашёл канал: {link}')
+            answers += f'Не нашёл канал: {link}\n'
+
+    await message.answer(answers, ParseMode.HTML)
 
 
 async def list_command(message: types.Message):
@@ -61,13 +64,13 @@ async def list_command(message: types.Message):
     if not (channels := db.get_all_channels(chat.id)):
         return await message.answer(f'Нету каналов. Быстрей добавляй!')
 
-    answer = ''
+    answers = ''
     for channel in channels:
         url = f'https://www.youtube.com/channel/{channel.channel_id}'
         channel_name = yt.get_channel_name(channel.channel_id)
-        answer += f'🔷 <a href=\'{url}\'>{channel_name}</a>' + '\n'
+        answers += f'🔷 <a href=\'{url}\'>{channel_name}</a>' + '\n'
 
-    return await message.answer(answer, ParseMode.HTML)
+    return await message.answer(answers, ParseMode.HTML)
 
 
 async def help_command(message: types.Message):
@@ -98,8 +101,9 @@ async def checking_updates(chat_id):
 
 async def check_command(message: types.Message):
     updates = await checking_updates(message.chat.id)
-    for update in updates:
-        await message.answer(update, ParseMode.HTML)
+    if not updates:
+        return await message.answer('Пока новых роликов нет!', ParseMode.HTML)
+    return await message.answer('\n'.join(updates), ParseMode.HTML)
 
 
 def register_handlers(dp: Dispatcher):
