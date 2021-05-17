@@ -26,8 +26,8 @@ async def scheduled(wait_wor):
 
         for chat in db.get_all_chats():
             updates = await checking_updates(chat.id)
-            for update in updates:
-                await bot.send_message(chat.id, update, parse_mode='HTML')
+            if updates:
+                await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
 
 
 if __name__ == '__main__':
