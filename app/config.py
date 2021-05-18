@@ -4,9 +4,7 @@ import os
 TG_TOKEN = os.environ.get('TG_TOKEN')
 YT_TOKEN = os.environ.get('YT_TOKEN')
 
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_NAME = os.environ.get('DB_NAME')
+DATABASE_URL = os.environ.get('DATABASE_URL').split('://')[-1]
 
 PORT = os.environ.get('PORT')
 HOST = os.environ.get('HOST')
