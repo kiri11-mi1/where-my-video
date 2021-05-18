@@ -1,8 +1,7 @@
 import asyncio
 import logging
 
-from aiogram import Bot, types, executor
-from aiogram.types import BotCommand
+from aiogram import Bot, executor
 from aiogram.dispatcher import Dispatcher
 
 from app.config import TG_TOKEN
