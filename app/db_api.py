@@ -1,5 +1,5 @@
 from app.models import Base, Chat, Channel
-from app.config import DB_USER, DB_NAME, DB_PASSWORD, HOST
+from app.config import DATABASE_URL
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -7,7 +7,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 class DBApi:
     def __init__(self):
-        engine = create_engine(f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{HOST}/{DB_NAME}')
+        engine = create_engine(f'postgresql+psycopg2://{DATABASE_URL}')
         Base.metadata.create_all(engine)
         session_factory = sessionmaker(bind=engine)
         Session = scoped_session(session_factory)
