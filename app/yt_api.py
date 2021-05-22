@@ -1,5 +1,5 @@
 from youtube_api import YoutubeDataApi
-from config import YT_TOKEN
+from app.config import YT_TOKEN
 import re
 import requests
 
