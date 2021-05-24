@@ -11,7 +11,6 @@ class Chat(Base):
     id = Column(String(64), primary_key=True)
     channels = relationship('Channel', backref="chat")
 
-
     def __repr__(self):
         return f'<Chat: {self.id}>'
 
@@ -22,7 +21,6 @@ class Channel(Base):
     channel_id = Column(String(64))
     last_video_id = Column(String(64))
     chat_id = Column(String(64), ForeignKey('chat.id'))
-
 
     def __repr__(self):
         return f'<Channel: {self.id}>'

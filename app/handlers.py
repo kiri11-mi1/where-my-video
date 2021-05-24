@@ -2,15 +2,14 @@ from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ParseMode
 
-from app.config import START_MESSAGE, HELP_MESSAGE, YT_TOKEN
+from app.config import START_MESSAGE, HELP_MESSAGE, YT_TOKEN, DATABASE_URL
 from app.db_api import DBApi
 from app.yt_api import YTApi
 
-import logging
 import re
 
 
-db = DBApi()
+db = DBApi(DATABASE_URL)
 yt = YTApi(YT_TOKEN)
 
 

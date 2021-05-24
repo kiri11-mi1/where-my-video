@@ -5,8 +5,7 @@ from aiogram import Bot, executor
 from aiogram.dispatcher import Dispatcher
 
 from app.config import TG_TOKEN
-from app.handlers import register_handlers, checking_updates
-from app.db_api import DBApi
+from app.handlers import register_handlers, checking_updates, db
 
 
 logging.basicConfig(level=logging.INFO)
@@ -14,14 +13,13 @@ logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=TG_TOKEN)
 dp = Dispatcher(bot, loop=asyncio.get_event_loop())
-db = DBApi()
 
 register_handlers(dp)
 
 
-async def scheduled(wait_wor):
+async def scheduled(wait_for):
     while True:
-        await asyncio.sleep(wait_wor)
+        await asyncio.sleep(wait_for)
 
         for chat in db.get_all_chats():
             updates = await checking_updates(chat.id)
