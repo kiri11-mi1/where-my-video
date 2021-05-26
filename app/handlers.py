@@ -86,6 +86,7 @@ async def checking_updates(chat_id):
         current_last_video = yt.get_last_video_id(channel.channel_id)
         if channel.last_video_id != current_last_video:
             channel.last_video_id = current_last_video
+            db.session.commit()
 
             channel_url = f'https://www.youtube.com/channel/{channel.channel_id}'
             channel_name = yt.get_channel_name(channel.channel_id)
