@@ -2,20 +2,27 @@ from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ParseMode
 
-from app.config import START_MESSAGE, HELP_MESSAGE, YT_TOKEN, DATABASE_URL
+from app.config import START_MESSAGE, HELP_MESSAGE, YT_TOKEN, DATABASE_URL, END_OF_QUOTA
 from app.db_api import DBApi
 from app.yt_api import YTApi
 
 import re
 import logging
+import requests
 
 
 logging.basicConfig(
     level=logging.INFO,
     format="[%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 )
+
 db = DBApi(DATABASE_URL)
-yt = YTApi(YT_TOKEN)
+
+try:
+    yt = YTApi(YT_TOKEN)
+except requests.exceptions.HTTPError as e:
+    logging.error(f'{e} - The number of requests has ended')
+
 
 
 async def start_command(message: types.Message):
@@ -26,12 +33,14 @@ async def start_command(message: types.Message):
 
 
 async def add_command(message: types.Message):
-    chat = db.get_or_create_chat(message.chat.id)
+    chat = db.get_or_create_chat(message.chat.id)   
     chat_name = message.chat.username or message.chat.title
     channel_links = re.split('\s+', message.get_args())
     answers = ''
     for link in channel_links:
-        if chan_id := yt.get_channel_id_by_url(link):
+        if (chan_id := yt.get_channel_id_by_url(link)) == END_OF_QUOTA:
+            return await message.answer(END_OF_QUOTA, ParseMode.HTML)
+        elif chan_id:
             channel_name = yt.get_channel_name(chan_id)
             last_video_id = yt.get_last_video_id(chan_id)
 
@@ -59,8 +68,9 @@ async def del_command(message: types.Message):
     channel_links = re.split('\s+', message.get_args())
     answers = ''
     for link in channel_links:
-        chan_id = yt.get_channel_id_by_url(link)
-        if db.get_channel(id=chan_id, chat_id=chat.id):
+        if (chan_id := yt.get_channel_id_by_url(link)) == END_OF_QUOTA:
+            return await message.answer(END_OF_QUOTA, ParseMode.HTML)
+        elif db.get_channel(id=chan_id, chat_id=chat.id):
             db.delete_channel(id=chan_id, chat_id=chat.id)
             channel_name = yt.get_channel_name(chan_id)
             answers += f'🗑 Удалил канал: <a href=\'{link}\'>{channel_name}</a>\n'
@@ -80,12 +90,14 @@ async def list_command(message: types.Message):
 
     answers = ''
     for channel in channels:
+        if (channel_name := yt.get_channel_name(channel.channel_id)) == END_OF_QUOTA:
+            return await message.answer(END_OF_QUOTA, ParseMode.HTML)
         url = f'https://www.youtube.com/channel/{channel.channel_id}'
         channel_name = yt.get_channel_name(channel.channel_id)
         answers += f'🔷 <a href=\'{url}\'>{channel_name}</a>' + '\n'
         logging.info(f'{chat_name}: {channel_name}')
 
-    return await message.answer(answers, ParseMode.HTML)
+    await message.answer(answers, ParseMode.HTML)
 
 
 async def help_command(message: types.Message):
@@ -99,17 +111,19 @@ async def checking_updates(chat_id):
         updates.append(f'Нету каналов. Быстрей добавляй!')
 
     for channel in channels:
-        current_last_video = yt.get_last_video_id(channel.channel_id)
-        if channel.last_video_id != current_last_video:
+        if (current_last_video := yt.get_last_video_id(channel.channel_id)) == END_OF_QUOTA:
+            return [END_OF_QUOTA]
+        elif channel.last_video_id != current_last_video:
             channel.last_video_id = current_last_video
             db.session.commit()
-            logging.info(f'{chat}: {channel_name} was UPDATED')
 
             channel_url = f'https://www.youtube.com/channel/{channel.channel_id}'
             channel_name = yt.get_channel_name(channel.channel_id)
 
             video_url = f'https://www.youtube.com/watch?v={channel.last_video_id}'
             video_title = yt.video_title(channel.last_video_id)
+
+            logging.info(f'{chat}: {channel_name} was UPDATED')
 
             updates.append(f'❗️ На канале <a href=\'{channel_url}\'>{channel_name}</a> вышло новое видео: <a href=\'{video_url}\'>{video_title}</a>')
 
@@ -120,7 +134,7 @@ async def check_command(message: types.Message):
     updates = await checking_updates(message.chat.id)
     if not updates:
         return await message.answer('Пока новых роликов нет!', ParseMode.HTML)
-    return await message.answer('\n'.join(updates), ParseMode.HTML)
+    await message.answer('\n'.join(updates), ParseMode.HTML)
 
 
 def register_handlers(dp: Dispatcher):
