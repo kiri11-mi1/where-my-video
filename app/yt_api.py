@@ -1,8 +1,9 @@
 from youtube_api import YoutubeDataApi
-from app.config import YT_TOKEN
+from app.config import YT_TOKEN, END_OF_QUOTA
 import re
 import requests
 import logging
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,23 +16,26 @@ class YTApi(YoutubeDataApi):
         try:
             metadata = self.get_video_metadata(video_id)
             return metadata['video_title']
-        except requests.exceptions.HTTPError:
-            logging.error('The number of requests has ended')
+        except requests.exceptions.HTTPError as e:
+            logging.error(f'{e} - The number of requests has ended')
+            return END_OF_QUOTA
 
     def get_channel_name(self, channel_id):
         try:
             metadata = self.get_channel_metadata(channel_id)
             return metadata['title']
-        except requests.exceptions.HTTPError:
-            logging.error('The number of requests has ended')
+        except requests.exceptions.HTTPError as e:
+            logging.error(f'{e} - The number of requests has ended')
+            return END_OF_QUOTA
 
     def get_last_video_id(self, channel_id):
         try:
             main_playlist_id = self.get_channel_metadata(channel_id=channel_id)['playlist_id_uploads']
             all_videos = self.get_videos_from_playlist_id(playlist_id=main_playlist_id)
             return all_videos[0]['video_id']
-        except requests.exceptions.HTTPError:
-            logging.error('The number of requests has ended')
+        except requests.exceptions.HTTPError as e:
+            logging.error(f'{e} - The number of requests has ended')
+            return END_OF_QUOTA
 
     def get_channel_id_by_url(self, channel_url: str) -> str:
         try:
@@ -40,8 +44,9 @@ class YTApi(YoutubeDataApi):
                 return channel_id
             if channel_info := self.search(channel_id):
                 return channel_info[0]['channel_id']
-        except requests.exceptions.HTTPError:
-            logging.error('The number of requests has ended') 
+        except requests.exceptions.HTTPError as e:
+            logging.error(f'{e} - The number of requests has ended')
+            return END_OF_QUOTA
 
 
 if __name__ == '__main__':
