@@ -8,7 +8,6 @@ from app.yt_api import YTApi
 
 import re
 import logging
-import requests
 
 
 logging.basicConfig(
@@ -20,7 +19,7 @@ db = DBApi(DATABASE_URL)
 
 try:
     yt = YTApi(YT_TOKEN)
-except requests.exceptions.HTTPError as e:
+except ValueError as e:
     logging.error(f'{e} - The number of requests has ended')
 
 
