@@ -16,12 +16,7 @@ logging.basicConfig(
 )
 
 db = DBApi(DATABASE_URL)
-
-try:
-    yt = YTApi(YT_TOKEN)
-except ValueError as e:
-    logging.error(f'{e} - The number of requests has ended')
-
+yt = YTApi(YT_TOKEN)
 
 
 async def start_command(message: types.Message):
