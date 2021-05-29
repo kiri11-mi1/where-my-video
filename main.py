@@ -8,7 +8,10 @@ from app.config import TG_TOKEN
 from app.handlers import register_handlers, checking_updates, db
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+)
 
 
 bot = Bot(token=TG_TOKEN)

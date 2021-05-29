@@ -7,19 +7,27 @@ from app.db_api import DBApi
 from app.yt_api import YTApi
 
 import re
+import logging
 
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+)
 db = DBApi(DATABASE_URL)
 yt = YTApi(YT_TOKEN)
 
 
 async def start_command(message: types.Message):
     db.get_or_create_chat(message.chat.id)
+    chat_name = message.chat.username or message.chat.title
+    logging.info(f'{chat_name} START messaging')
     await message.answer(START_MESSAGE)
 
 
 async def add_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)
+    chat_name = message.chat.username or message.chat.title
     channel_links = re.split('\s+', message.get_args())
     answers = ''
     for link in channel_links:
@@ -34,16 +42,20 @@ async def add_command(message: types.Message):
                     last_video_id=last_video_id
                 )
                 answers += f'✅ Канал <a href=\'{link}\'>{channel_name}</a> успешно добавлен.\n'
+                logging.info(f'{chat_name}: {channel_name} was ADDED')
             else:
                 answers += f'⚠️ Канал <a href=\'{link}\'>{channel_name}</a> уже был добавлен.\n'
+                logging.info(f'{chat_name}: {channel_name} ALREADY ADDED')
         else:
             answers += f'❌ Канал {link} не найден и не был добавлен...\n'
+            logging.info(f'{chat_name}: Channel NOT FOUND')
 
     await message.answer(answers, ParseMode.HTML)
 
 
 async def del_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)
+    chat_name = message.chat.username or message.chat.title
     channel_links = re.split('\s+', message.get_args())
     answers = ''
     for link in channel_links:
@@ -52,14 +64,17 @@ async def del_command(message: types.Message):
             db.delete_channel(id=chan_id, chat_id=chat.id)
             channel_name = yt.get_channel_name(chan_id)
             answers += f'🗑 Удалил канал: <a href=\'{link}\'>{channel_name}</a>\n'
+            logging.info(f'{chat_name}: {channel_name} was DELETED')
         else:
             answers += f'Не нашёл канал: {link}\n'
+            logging.info(f'{chat_name}: Channel NOT FOUND')
 
     await message.answer(answers, ParseMode.HTML)
 
 
 async def list_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)
+    chat_name = message.chat.username or message.chat.title
     if not (channels := db.get_all_channels(chat.id)):
         return await message.answer(f'Нету каналов. Быстрей добавляй!')
 
@@ -68,6 +83,7 @@ async def list_command(message: types.Message):
         url = f'https://www.youtube.com/channel/{channel.channel_id}'
         channel_name = yt.get_channel_name(channel.channel_id)
         answers += f'🔷 <a href=\'{url}\'>{channel_name}</a>' + '\n'
+        logging.info(f'{chat_name}: {channel_name}')
 
     return await message.answer(answers, ParseMode.HTML)
 
@@ -87,6 +103,7 @@ async def checking_updates(chat_id):
         if channel.last_video_id != current_last_video:
             channel.last_video_id = current_last_video
             db.session.commit()
+            logging.info(f'{chat}: {channel_name} was UPDATED')
 
             channel_url = f'https://www.youtube.com/channel/{channel.channel_id}'
             channel_name = yt.get_channel_name(channel.channel_id)
