@@ -1,10 +1,10 @@
 import asyncio
 import logging
 
-from aiogram import Bot, executor
+from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 
-from app.config import TG_TOKEN
+from app.config import TG_TOKEN, COMMANDS
 from app.handlers import register_handlers, checking_updates, db
 
 
@@ -14,13 +14,7 @@ logging.basicConfig(
 )
 
 
-bot = Bot(token=TG_TOKEN)
-dp = Dispatcher(bot, loop=asyncio.get_event_loop())
-
-register_handlers(dp)
-
-
-async def scheduled(wait_for):
+async def scheduled(bot, wait_for):
     while True:
         await asyncio.sleep(wait_for)
 
@@ -30,6 +24,18 @@ async def scheduled(wait_for):
                 await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
 
 
+async def main():
+    bot = Bot(token=TG_TOKEN)
+    dp = Dispatcher(bot, loop=asyncio.get_event_loop())
+    register_handlers(dp)
+
+    await bot.set_my_commands(COMMANDS)
+
+    dp.loop.create_task(scheduled(bot, 60*60))
+
+    await dp.skip_updates()
+    await dp.start_polling()
+
+
 if __name__ == '__main__':
-    dp.loop.create_task(scheduled(60*60))
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
