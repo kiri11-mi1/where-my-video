@@ -124,6 +124,17 @@ async def checking_updates(chat_id):
     return updates
 
 
+async def stat_command(message: types.Message):
+    chat = db.get_or_create_chat(message.chat.id)
+    chat_name = message.chat.username or message.chat.title
+    logging.info(f'{chat_name}: STAT command')
+    channels_count = len(db.get_all_channels(chat.id))
+    await message.answer((
+        '📈 Минутка статистики:\n\n'
+        f'Количество каналов: <b>{channels_count}</b>'
+    ), ParseMode.HTML)
+
+
 async def check_command(message: types.Message):
     updates = await checking_updates(message.chat.id)
     if not updates:
@@ -136,5 +147,6 @@ def register_handlers(dp: Dispatcher):
     dp.register_message_handler(help_command, commands=['help'])
     dp.register_message_handler(add_command, commands=['add'])
     dp.register_message_handler(list_command, commands=['list'])
+    dp.register_message_handler(stat_command, commands=['stat'])
     dp.register_message_handler(check_command, commands=['check'])
     dp.register_message_handler(del_command, commands=['del'])
