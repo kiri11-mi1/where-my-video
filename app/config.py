@@ -1,4 +1,5 @@
 import os
+from aiogram.types import BotCommand
 
 
 TG_TOKEN = os.environ.get('TG_TOKEN')
@@ -7,6 +8,17 @@ YT_TOKEN = os.environ.get('YT_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
 PORT = os.environ.get('PORT')
 HOST = os.environ.get('HOST')
+
+
+COMMANDS = [
+    BotCommand(command="/start", description="Давай начнём общение"),
+    BotCommand(command="/help", description="Показывает список команд"),
+    BotCommand(command="/check", description="Покажет новые ролики на каналах"),
+    BotCommand(command="/list", description="При вызове этой команды, вы увидите список всех каналов"),
+    BotCommand(command="/add", description="Добавит канал в чат"),
+    BotCommand(command="/del", description="Удалит канал из чата"),
+    BotCommand(command="/stat", description="Покажет статистику в чате"),
+]
 
 
 START_MESSAGE = (
