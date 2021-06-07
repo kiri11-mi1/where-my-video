@@ -14,25 +14,20 @@ logging.basicConfig(
     format="[%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 )
 
-
-async def mailing(bot):
-    for chat in db.get_all_chats():
-        updates = await checking_updates(chat.id)
-        if updates:
-            await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
+bot = Bot(token=TG_TOKEN)
+dp = Dispatcher(bot, loop=asyncio.get_event_loop())
+register_handlers(dp)
 
 
-async def main():
-    bot = Bot(token=TG_TOKEN)
-    dp = Dispatcher(bot, loop=asyncio.get_event_loop())
-
-    register_handlers(dp)
-    await bot.set_my_commands(COMMANDS)
-    await mailing(bot)
-
-    await dp.skip_updates()
-    await dp.start_polling()
+async def scheduled(wait_for):
+    while True:
+        for chat in db.get_all_chats():
+            updates = await checking_updates(chat.id)
+            if updates:
+                await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
+        await asyncio.sleep(wait_for)
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    dp.loop.create_task(scheduled(60*60))
+    executor.start_polling(dp, skip_updates=True)
