@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+from aiogram.utils.exceptions import BotBlocked
 
 from app.config import TG_TOKEN, COMMANDS
 from app.handlers import register_handlers, checking_updates, db
@@ -24,7 +25,10 @@ async def scheduled(wait_for):
         for chat in db.get_all_chats():
             updates = await checking_updates(chat.id)
             if updates:
-                await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
+                try:
+                    await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
+                except BotBlocked:
+                    logging.error('Bot BLOCKED by user')
         await asyncio.sleep(wait_for)
 
 
