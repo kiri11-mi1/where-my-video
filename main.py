@@ -4,7 +4,7 @@ import logging
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotBlocked, NetworkError
 
 from app.config import TG_TOKEN, COMMANDS
 from app.handlers import register_handlers, checking_updates, db
@@ -33,5 +33,8 @@ async def scheduled(wait_for):
 
 
 if __name__ == '__main__':
-    dp.loop.create_task(scheduled(60*60))
-    executor.start_polling(dp, skip_updates=True)
+    try:
+        dp.loop.create_task(scheduled(60*60))
+        executor.start_polling(dp, skip_updates=True)
+    except NetworkError:
+        logging.error('NETWORK ERROR')
