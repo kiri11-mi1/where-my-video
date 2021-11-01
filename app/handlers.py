@@ -1,13 +1,14 @@
+import re
+import logging
+
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ParseMode
 
-from app.config import START_MESSAGE, HELP_MESSAGE, YT_TOKEN, DATABASE_URL, END_OF_QUOTA
+from app.messages import START_MESSAGE, HELP_MESSAGE, END_OF_QUOTA
+from app.credentials import YT_TOKEN, DATABASE_URL
 from app.db_api import DBApi
 from app.yt_api import YTApi
-
-import re
-import logging
 
 
 logging.basicConfig(
