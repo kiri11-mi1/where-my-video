@@ -15,6 +15,9 @@ logging.basicConfig(
     format="[%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 )
 
+# Время рассылки - 1 раз в час
+TIME = 60*60
+
 bot = Bot(token=TG_TOKEN)
 dp = Dispatcher(bot, loop=asyncio.get_event_loop())
 register_handlers(dp)
@@ -34,7 +37,7 @@ async def scheduled(wait_for):
 
 if __name__ == '__main__':
     try:
-        dp.loop.create_task(scheduled(60*60))
+        dp.loop.create_task(scheduled(TIME))
         executor.start_polling(dp, skip_updates=True)
     except NetworkError:
         logging.error('NETWORK ERROR')
