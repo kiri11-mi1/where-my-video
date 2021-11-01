@@ -28,7 +28,7 @@ async def scheduled(wait_for):
                 try:
                     await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
                 except (BotBlocked, BotKicked):
-                    logging.error('Bot BLOCKED by user')
+                    logging.error('Bot BLOCKED')
         await asyncio.sleep(wait_for)
 
 
