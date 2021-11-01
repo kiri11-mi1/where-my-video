@@ -6,7 +6,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.utils.exceptions import BotBlocked, NetworkError, BotKicked
 
-from app.config import TG_TOKEN, COMMANDS
+from app.credentials import TG_TOKEN
 from app.handlers import register_handlers, checking_updates, db
 
 

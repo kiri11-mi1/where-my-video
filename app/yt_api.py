@@ -1,14 +1,18 @@
-from youtube_api import YoutubeDataApi
-from app.config import YT_TOKEN, END_OF_QUOTA
 import re
-import requests
 import logging
+
+import requests
+from youtube_api import YoutubeDataApi
+
+from app.credentials import YT_TOKEN
+from app.messages import END_OF_QUOTA
 
 
 logging.basicConfig(
     level=logging.INFO,
     format="[%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 )
+
 
 class YTApi(YoutubeDataApi):
 
@@ -47,11 +51,3 @@ class YTApi(YoutubeDataApi):
         except requests.exceptions.HTTPError as e:
             logging.error(f'{e} - The number of requests has ended')
             return END_OF_QUOTA
-
-
-if __name__ == '__main__':
-    yt = YTApi(YT_TOKEN)
-    result = yt.get_channel_id_by_url(
-        'https://www.youtube.com/c/ArchakovBlog'
-    )
-    print(result)
