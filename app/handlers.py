@@ -31,8 +31,14 @@ async def add_command(message: types.Message):
     chat = db.get_or_create_chat(message.chat.id)   
     chat_name = message.chat.username or message.chat.title
     channel_links = re.split('\s+', message.get_args())
+    # Чтобы не грузить бота запросами в ютуб апи, будет ограничение на количество добавления видео в одном запросе
+    count_video = 3
     answers = ''
-    for link in channel_links:
+
+    if len(channel_links) > count_video:
+        await message.answer(f"Действует ограничение на {count_video} видео 🙃", ParseMode.HTML)
+
+    for link in channel_links[:count_video]:
         if (chan_id := yt.get_channel_id_by_url(link)) == END_OF_QUOTA:
             return await message.answer(END_OF_QUOTA, ParseMode.HTML)
         elif chan_id:
