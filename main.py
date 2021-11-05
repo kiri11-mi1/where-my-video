@@ -30,8 +30,8 @@ async def scheduled(wait_for):
             if updates:
                 try:
                     await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
-                except (BotBlocked, BotKicked):
-                    logging.error('Bot BLOCKED')
+                except (BotBlocked, BotKicked) as e:
+                    logging.error(e)
         await asyncio.sleep(wait_for)
 
 
