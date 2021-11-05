@@ -4,7 +4,7 @@ import logging
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from aiogram.utils.exceptions import BotBlocked, NetworkError, BotKicked
+from aiogram.utils.exceptions import BotBlocked, NetworkError, BotKicked, ChatNotFound
 
 from app.credentials import TG_TOKEN
 from app.handlers import register_handlers, checking_updates, db
@@ -30,7 +30,7 @@ async def scheduled(wait_for):
             if updates:
                 try:
                     await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
-                except (BotBlocked, BotKicked) as e:
+                except (BotBlocked, BotKicked, ChatNotFound) as e:
                     logging.error(e)
         await asyncio.sleep(wait_for)
 
