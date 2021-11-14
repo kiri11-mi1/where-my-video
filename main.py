@@ -32,6 +32,8 @@ async def scheduled(wait_for):
                     await bot.send_message(chat.id, '\n'.join(updates), parse_mode='HTML')
                 except (BotBlocked, BotKicked, ChatNotFound) as e:
                     logging.error(e)
+                    deleted_chat = db.delete_chat(chat.id)
+                    logging.info(f"{deleted_chat} was DELETED")
         await asyncio.sleep(wait_for)
 
 
